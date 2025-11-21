@@ -14,7 +14,7 @@ try:
     from socket_code import SocketSender, HOST, PORT, TIMEOUT
 except Exception:  # Fallback if file not yet present
     HOST = os.getenv("ROBOT_COFFEE_HOST", "127.0.0.1")
-    PORT = int(os.getenv("ROBOT_COFFEE_PORT", "50117"))
+    PORT = int(os.getenv("ROBOT_COFFEE_PORT", "61890"))
     TIMEOUT = float(os.getenv("ROBOT_COFFEE_TIMEOUT", "3.0"))
 
     class SocketSender:  # type: ignore
@@ -25,7 +25,7 @@ except Exception:  # Fallback if file not yet present
             self.port = port
             self.timeout = timeout
             self._socket_mod = socket
-
+        #ส่งid
         def send(self, message: str) -> None:
             with self._socket_mod.create_connection((self.host, self.port), timeout=self.timeout) as s:
                 s.sendall(message.encode("utf-8"))
@@ -33,7 +33,7 @@ except Exception:  # Fallback if file not yet present
 
 ASSETS_DIR = os.path.join(os.path.dirname(__file__), "images")
 
-class CoffeeKioskApp(tk.Tk):
+class CoffeeCpe(tk.Tk):
     def __init__(self, sender: SocketSender, menu_items: List[MenuItem]) -> None:  # type: ignore[name-defined]
         super().__init__()
         self.sender = sender
@@ -42,7 +42,7 @@ class CoffeeKioskApp(tk.Tk):
         self.waiting_for_admin = False
 
         # Window setup (customer window)
-        self.title("Robot Coffee")
+        self.title("CPE Robot Coffee")
         self.geometry("520x600")
         self.resizable(False, False)
 
@@ -128,12 +128,13 @@ class CoffeeKioskApp(tk.Tk):
         self.pages["payment"].set_waiting(False, "Admin rejected the payment.")  # type: ignore[attr-defined]
         self.admin_window.clear_request(status="Rejected")
         messagebox.showinfo("Payment not approved", "Please try again or choose another drink.")
+    
 
 
 class AdminWindow(tk.Toplevel):
     """Secondary window for staff to approve or reject orders."""
 
-    def __init__(self, controller: CoffeeKioskApp) -> None:
+    def __init__(self, controller: CoffeeCpe) -> None:
         super().__init__(controller)
         self.controller = controller
         self.title("Robot Coffee - Admin")
@@ -197,16 +198,16 @@ class AdminWindow(tk.Toplevel):
 def default_menu() -> List[MenuItem]:
     # Default 4-menu configuration; replace image files with your own.
     return [
-        MenuItem(id="coffee1", name="บราซิล", image_path=os.path.join(ASSETS_DIR, "brazilain.png"), price=19.0, brew_seconds=25),
-        MenuItem(id="coffee2", name="อราบิก้า", image_path=os.path.join(ASSETS_DIR, "arabica.webp"), price=19.0, brew_seconds=25),
-        MenuItem(id="coffee3", name="ผสม", image_path=os.path.join(ASSETS_DIR, "mixed.jpg"), price=19.0, brew_seconds=25),
-        MenuItem(id="coffee4", name="น้ำแข็ง", image_path=os.path.join(ASSETS_DIR, "ice.webp"), price=19.0, brew_seconds=25),
+        MenuItem(id="coffee1", name="บราซิล", image_path=os.path.join(ASSETS_DIR, "1.png"), price=19.0, brew_seconds=25),
+        MenuItem(id="coffee2", name="อราบิก้า", image_path=os.path.join(ASSETS_DIR, "2.png"), price=19.0, brew_seconds=25),
+        MenuItem(id="coffee3", name="ผสม", image_path=os.path.join(ASSETS_DIR, "3.png"), price=19.0, brew_seconds=25),
+        MenuItem(id="coffee4", name="น้ำแข็ง", image_path=os.path.join(ASSETS_DIR, "4.png"), price=19.0, brew_seconds=25),
     ]
 
 
 def main() -> None:
     sender = SocketSender(HOST, PORT, TIMEOUT)  # type: ignore[name-defined]
-    app = CoffeeKioskApp(sender, default_menu())
+    app = CoffeeCpe(sender, default_menu())
     app.mainloop()
 
 
