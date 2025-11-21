@@ -19,7 +19,7 @@ class MenuPage(tk.Frame):
 
         title = tk.Label(
             header,
-            text="Robot Coffee Kiosk",
+            text="CPE Robot Coffee",
             font=("Segoe UI", 16, "bold"),
             bg="#f5f5f5",
             fg="#333333",
@@ -104,9 +104,9 @@ class MenuPage(tk.Frame):
             frame,
             text="ORDER NOW",
             font=("Segoe UI", 11, "bold"),
-            bg="#ff9800",
+            bg="#b9b8b5",
             fg="white",
-            activebackground="#ffa733",
+            activebackground="#b9b8b5",
             activeforeground="white",
             bd=0,
             relief="flat",
