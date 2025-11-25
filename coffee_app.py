@@ -25,13 +25,17 @@ except Exception:  # Fallback if file not yet present
             self.port = port
             self.timeout = timeout
             self._socket_mod = socket
-        #ส่งid
+
+        # ส่งid
         def send(self, message: str) -> None:
-            with self._socket_mod.create_connection((self.host, self.port), timeout=self.timeout) as s:
+            with self._socket_mod.create_connection(
+                (self.host, self.port), timeout=self.timeout
+            ) as s:
                 s.sendall(message.encode("utf-8"))
 
 
 ASSETS_DIR = os.path.join(os.path.dirname(__file__), "images")
+
 
 class CoffeeCpe(tk.Tk):
     def __init__(self, sender: SocketSender, menu_items: List[MenuItem]) -> None:  # type: ignore[name-defined]
@@ -69,12 +73,10 @@ class CoffeeCpe(tk.Tk):
         if name == "payment":
             self.pages["payment"].refresh()  # type: ignore[attr-defined]
 
-
     def on_countdown_update(self, remaining: int, total: int) -> None:
         """Sync brewing countdown state to the menu page."""
         # แค่ส่งต่อไปให้ MenuPage อัปเดตข้อความ "Ready / กำลังชง...xxs"
         self.pages["menu"].set_busy_status(remaining, total)  # type: ignore[attr-defined]
-
 
     def start_payment(self, item: MenuItem) -> None:
         self.selected_item = item
@@ -127,8 +129,9 @@ class CoffeeCpe(tk.Tk):
         self.waiting_for_admin = False
         self.pages["payment"].set_waiting(False, "Admin rejected the payment.")  # type: ignore[attr-defined]
         self.admin_window.clear_request(status="Rejected")
-        messagebox.showinfo("Payment not approved", "Please try again or choose another drink.")
-    
+        messagebox.showinfo(
+            "Payment not approved", "Please try again or choose another drink."
+        )
 
 
 class AdminWindow(tk.Toplevel):
@@ -141,27 +144,45 @@ class AdminWindow(tk.Toplevel):
         self.geometry("420x260")
         self.resizable(False, False)
 
-        tk.Label(self, text="Admin Console", font=("Segoe UI", 14, "bold")).pack(pady=(10, 6))
+        tk.Label(self, text="Admin Console", font=("Segoe UI", 14, "bold")).pack(
+            pady=(10, 6)
+        )
 
         info = tk.Frame(self, padx=10, pady=6)
         info.pack(fill=tk.X)
 
-        tk.Label(info, text="Pending drink:", font=("Segoe UI", 10, "bold")).grid(row=0, column=0, sticky="w")
-        tk.Label(info, text="Price:", font=("Segoe UI", 10, "bold")).grid(row=1, column=0, sticky="w")
+        tk.Label(info, text="Pending drink:", font=("Segoe UI", 10, "bold")).grid(
+            row=0, column=0, sticky="w"
+        )
+        tk.Label(info, text="Price:", font=("Segoe UI", 10, "bold")).grid(
+            row=1, column=0, sticky="w"
+        )
 
         self.item_var = tk.StringVar(value="-")
         self.price_var = tk.StringVar(value="-")
         self.status_var = tk.StringVar(value="Waiting for customer order.")
 
-        tk.Label(info, textvariable=self.item_var, anchor="w").grid(row=0, column=1, sticky="w", padx=(6, 0))
-        tk.Label(info, textvariable=self.price_var, anchor="w").grid(row=1, column=1, sticky="w", padx=(6, 0))
+        tk.Label(info, textvariable=self.item_var, anchor="w").grid(
+            row=0, column=1, sticky="w", padx=(6, 0)
+        )
+        tk.Label(info, textvariable=self.price_var, anchor="w").grid(
+            row=1, column=1, sticky="w", padx=(6, 0)
+        )
 
         tk.Label(self, textvariable=self.status_var, fg="steelblue").pack(pady=(4, 8))
 
         btns = tk.Frame(self, pady=8)
         btns.pack()
-        self.approve_btn = tk.Button(btns, text="Approve & brew", width=16, command=self._approve, state=tk.DISABLED)
-        self.reject_btn = tk.Button(btns, text="Reject", width=10, command=self._reject, state=tk.DISABLED)
+        self.approve_btn = tk.Button(
+            btns,
+            text="Approve & brew",
+            width=16,
+            command=self._approve,
+            state=tk.DISABLED,
+        )
+        self.reject_btn = tk.Button(
+            btns, text="Reject", width=10, command=self._reject, state=tk.DISABLED
+        )
         self.approve_btn.grid(row=0, column=0, padx=6)
         self.reject_btn.grid(row=0, column=1, padx=6)
 
@@ -198,10 +219,13 @@ class AdminWindow(tk.Toplevel):
 def default_menu() -> List[MenuItem]:
     # Default 4-menu configuration; replace image files with your own.
     return [
-        MenuItem(id="coffee1", name="บราซิล", image_path=os.path.join(ASSETS_DIR, "1.png"), price=19.0, brew_seconds=25),
-        MenuItem(id="coffee2", name="อราบิก้า", image_path=os.path.join(ASSETS_DIR, "2.png"), price=19.0, brew_seconds=25),
-        MenuItem(id="coffee3", name="ผสม", image_path=os.path.join(ASSETS_DIR, "3.png"), price=19.0, brew_seconds=25),
-        MenuItem(id="coffee4", name="น้ำแข็ง", image_path=os.path.join(ASSETS_DIR, "4.png"), price=19.0, brew_seconds=25),
+        MenuItem(
+            id="coffee1",
+            name="สูตรลับCPE",
+            image_path=os.path.join(ASSETS_DIR, "template.png"),
+            price=19.0,
+            brew_seconds=25,
+        )
     ]
 
 
