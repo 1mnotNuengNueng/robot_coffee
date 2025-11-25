@@ -13,14 +13,13 @@ class MenuPage(tk.Frame):
         self.controller = controller
         self._images_cache: List[tk.PhotoImage] = []
 
-        # ==== ส่วนหัวด้านบนไว้แสดงสถานะเครื่องกำลังชง ====
         header = tk.Frame(self, bg="#f5f5f5")
         header.pack(fill=tk.X, padx=10, pady=(8, 2))
 
         title = tk.Label(
             header,
             text="CPE Robot Coffee",
-            font=("Segoe UI", 16, "bold"),
+            font=("Segoe UI", 20, "bold"),
             bg="#f5f5f5",
             fg="#333333",
         )
@@ -35,25 +34,18 @@ class MenuPage(tk.Frame):
         )
         self.busy_label.pack(side=tk.RIGHT)
 
-        # ==== พื้นที่วางการ์ดเมนู ====
         grid_frame = tk.Frame(self, bg="#f5f5f5")
-        grid_frame.pack(expand=True, fill=tk.BOTH, padx=10, pady=10)
+        grid_frame.pack(expand=True, fill=tk.BOTH, padx=40, pady=30)
 
-        # ให้ column/row ของ grid นี้มีขนาด uniform กัน
-        for c in range(2):
-            grid_frame.columnconfigure(c, weight=1, uniform="menu_col")
-        for r in range(2):
-            grid_frame.rowconfigure(r, weight=1, uniform="menu_row")
+        # มีแค่ 1 column / 1 row
+        grid_frame.columnconfigure(0, weight=1, uniform="menu_col")
+        grid_frame.rowconfigure(0, weight=1, uniform="menu_row")
 
-        # สร้างการ์ดจาก controller.menu_items
-        for idx, item in enumerate(self.controller.menu_items):
-            r, c = divmod(idx, 2)
+        if self.controller.menu_items:
+            item = self.controller.menu_items[0]
             card = self._build_menu_card(grid_frame, item)
-            card.grid(row=r, column=c, padx=8, pady=8, sticky="nsew")
+            card.grid(row=0, column=0, padx=8, pady=8, sticky="nsew")
 
-    # =====================================================================
-    #   สร้าง card แต่ละใบให้ขนาดเท่ากัน + ปุ่ม ORDER NOW เท่ากัน
-    # =====================================================================
     def _build_menu_card(self, parent: tk.Misc, item: MenuItem) -> tk.Frame:
         frame = tk.Frame(
             parent,
@@ -61,11 +53,11 @@ class MenuPage(tk.Frame):
             borderwidth=2,
             padx=8,
             pady=8,
-            width=230,
-            height=330,   # << เพิ่มความสูง (เดิม 260) ให้พอสำหรับรูป + ราคา + ปุ่ม
+            width=360,
+            height=420,  # สูงพอสำหรับรูป + ราคา + ปุ่ม
             bg="white",
         )
-        frame.grid_propagate(False)  # ยังใช้ได้อยู่ แต่ตอนนี้ความสูงพอแล้ว
+        frame.grid_propagate(False)
 
         frame.columnconfigure(0, weight=1)
         for ridx, weight in ((0, 0), (1, 0), (2, 1), (3, 0), (4, 0)):
@@ -74,9 +66,9 @@ class MenuPage(tk.Frame):
         name_lbl = tk.Label(
             frame,
             text=item.name,
-            font=("Segoe UI", 12, "bold"),
+            font=("Segoe UI", 18, "bold"),
             bg="white",
-            wraplength=180,
+            wraplength=280,
             justify="center",
         )
         name_lbl.grid(row=0, column=0, pady=(4, 2), sticky="n")
@@ -94,7 +86,7 @@ class MenuPage(tk.Frame):
         price_lbl = tk.Label(
             frame,
             text=f"{item.price:,.2f} ฿",
-            font=("Segoe UI", 11),
+            font=("Segoe UI", 14),
             bg="white",
             fg="#444444",
         )
@@ -103,10 +95,10 @@ class MenuPage(tk.Frame):
         btn = tk.Button(
             frame,
             text="ORDER NOW",
-            font=("Segoe UI", 11, "bold"),
-            bg="#b9b8b5",
+            font=("Segoe UI", 14, "bold"),
+            bg="#2E7D32",
             fg="white",
-            activebackground="#b9b8b5",
+            activebackground="#256628",
             activeforeground="white",
             bd=0,
             relief="flat",
@@ -118,11 +110,10 @@ class MenuPage(tk.Frame):
             column=0,
             pady=(6, 2),
             sticky="ew",
-            ipady=6,   # สูงเท่ากันทุกปุ่ม
+            ipady=10,
         )
 
         return frame
-
 
     # โหลดรูปภาพจาก path
     def _load_image(self, path: str) -> tk.PhotoImage | None:
@@ -132,8 +123,7 @@ class MenuPage(tk.Frame):
             img = tk.PhotoImage(file=path)
             w, h = img.width(), img.height()
 
-            # ให้รูปไม่เกิน 110x110 จะได้เหลือที่ให้ price + button
-            max_size = 110
+            max_size = 240
             if w > max_size or h > max_size:
                 scale = max(w / max_size, h / max_size)
                 subsample = int(scale) if scale > 1 else 1
@@ -143,16 +133,9 @@ class MenuPage(tk.Frame):
         except Exception:
             return None
 
-
     # เมธอดนี้ถูกเรียกจาก app.on_countdown_update()
     def set_busy_status(self, remaining: int, total: int) -> None:
         if remaining > 0 and total > 0:
-            self.busy_label.config(
-                text=f"กำลังชง... {remaining}s",
-                fg="orange"
-            )
+            self.busy_label.config(text=f"กำลังชง... {remaining}s", fg="orange")
         else:
-            self.busy_label.config(
-                text="Ready",
-                fg="green"
-            )
+            self.busy_label.config(text="Ready", fg="green")
