@@ -221,7 +221,7 @@ def default_menu() -> List[MenuItem]:
     return [
         MenuItem(
             id="coffee1",
-            name="สูตรลับCPE",
+            name="สูตรลับแขนกล",
             image_path=os.path.join(ASSETS_DIR, "template.png"),
             price=19.0,
             brew_seconds=25,
